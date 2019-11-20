@@ -258,6 +258,7 @@ public class GameManager : MonoBehaviour
         GameObject o = new GameObject();
         o.transform.position = pos;
         BoxCollider bc = o.AddComponent<BoxCollider>();
+        o.AddComponent<OVRGrabbable>();
         bc.size = new Vector3(size, 1, 1);
         bc.center = new Vector3(size/2.0f - 0.5f, 0, 0);
         o.AddComponent<Rigidbody>();
