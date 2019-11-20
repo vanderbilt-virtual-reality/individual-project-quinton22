@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextUpdater m_TextUpdater;
     [SerializeField] private GameObject m_Block1;
     [SerializeField] private GameObject m_Block2;
+
+    [SerializeField] private GameObject m_Empty;
     public int[] m_Range = {2, 10};
     private int val1;
     private int val2;
@@ -169,14 +172,14 @@ public class GameManager : MonoBehaviour
 
     private GameObject CreateGameObject(Vector3 pos, int size, string name = "Blocks")
     {
-        GameObject o = new GameObject();
+        GameObject o = Instantiate(m_Empty);
         o.transform.position = pos;
-        BoxCollider bc = o.AddComponent<BoxCollider>();
-        OVRGrabbable ovr = o.AddComponent<OVRGrabbable>();
-        ovr.enabled = true;
+        BoxCollider bc = o.GetComponent<BoxCollider>();
+       
         bc.size = new Vector3(size * m_size, m_size, m_size);
         bc.center = new Vector3((size/2.0f - 0.5f )* m_size, 0, 0);
-        o.AddComponent<Rigidbody>();
+
+        o.GetComponent<Rigidbody>().isKinematic = false;
 
         if (name == "Blocks")
         {
