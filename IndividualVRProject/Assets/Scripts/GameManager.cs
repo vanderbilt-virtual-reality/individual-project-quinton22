@@ -309,8 +309,7 @@ public class GameManager : MonoBehaviour
                
                 if (name1 == "Z1" || name1 == "Z2")
                 {
-                    var lowestPos = FindLowestPosition(o1Parent, "Z");
-                    var highestPos = FindHighestPosition(o1Parent, "Z");
+               
                     foreach (Transform child in o1Parent.transform)
                     {
                         var defaultDict = DefaultCollidersDict();
@@ -327,16 +326,15 @@ public class GameManager : MonoBehaviour
                     var o2ChildCount = o2Parent.transform.childCount;
                     for (var i = 1; i <= Math.Floor((double) o2ChildCount / val2); ++i)
                     {
-                        Debug.Log(i);
                         for (var j = 0; j < val2; ++j)
                         {
                             Transform child = o2Parent.transform.GetChild(0);
                             child.parent = o1Parent.transform;
                             Vector3 pos = o1.transform.parent.localPosition;
                             if (name1 == "Z1")
-                                pos.z -= i * m_size + lowestPos;
+                                pos.z -= i * m_size;
                             else if (name1 == "Z2")
-                                pos.z += i * m_size + highestPos;
+                                pos.z += i * m_size;
                             pos.x = j * m_size;
                             child.localPosition = pos;
                             child.localRotation = Quaternion.identity;
@@ -354,14 +352,13 @@ public class GameManager : MonoBehaviour
 
                     BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
                     bc.size = new Vector3(val2 * m_size, m_size, (o1Parent.transform.childCount / val2) * m_size);
-                    //bc.center = new Vector3((o1Parent.transform.childCount / 2f - .5f) * m_size, 0, 0);
+                    bc.center = new Vector3(val2 * m_size / 2f - (0.5f*m_size), 0, (FindLowestPosition(o1Parent, "Z") + FindHighestPosition(o1Parent, "Z"))/2f);
                     
                 }
                 
                 if (name1 == "Y1" || name1 == "Y2")
                 {
-                    var lowestPos = FindLowestPosition(o1Parent, "Y");
-                    var highestPos = FindHighestPosition(o1Parent, "Y");
+                   
                     foreach (Transform child in o1Parent.transform)
                     {
                         var defaultDict = DefaultCollidersDict();
@@ -384,9 +381,9 @@ public class GameManager : MonoBehaviour
                             child.parent = o1Parent.transform;
                             Vector3 pos = o1.transform.parent.localPosition;
                             if (name1 == "Y1")
-                                pos.y -= i * m_size + lowestPos;
+                                pos.y -= i * m_size;
                             else if (name1 == "Y2")
-                                pos.y += i * m_size + highestPos;
+                                pos.y += i * m_size;
                             pos.x = j * m_size;
                             child.localPosition = pos;
                             child.localRotation = Quaternion.identity;
@@ -404,6 +401,7 @@ public class GameManager : MonoBehaviour
 
                     BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
                     bc.size = new Vector3(val2 * m_size, (o1Parent.transform.childCount / val2) * m_size, m_size);
+                    bc.center = new Vector3(val2 * m_size / 2f - (0.5f * m_size), (FindLowestPosition(o1Parent, "Y") + FindHighestPosition(o1Parent, "Y")) / 2f, 0);
                 }
 
                 Destroy(o2Parent);
