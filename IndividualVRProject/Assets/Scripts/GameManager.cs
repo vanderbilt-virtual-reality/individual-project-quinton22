@@ -28,6 +28,8 @@ public class GameManager : MonoBehaviour
     private List<string> multSnapping = new List<string>();
 
     private float m_size;
+
+    private bool completing = false;
     
     // Start is called before the first frame update
     void Start()
@@ -38,6 +40,12 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (OVRInput.GetDown(OVRInput.RawButton.A) && completing)
+        {
+            completing = false;
+            CompleteCoroutine();
+        }
+
         if (isComplete)
         {
             // start new round
@@ -54,9 +62,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator CompleteCoroutine()
+    private void CompleteCoroutine()
     {
-        yield return new WaitForSeconds(completeTime);
+        //yield return new WaitForSeconds(completeTime);
         if (objectToDelete != null)
         {
             Destroy(objectToDelete);
@@ -70,7 +78,8 @@ public class GameManager : MonoBehaviour
     public void Complete()
     {
         m_TextUpdater.Complete();
-        StartCoroutine("CompleteCoroutine");
+        completing = true;
+        //StartCoroutine("CompleteCoroutine");
     }
 
     private void SpawnObjects(int value1, int value2, bool addition)
