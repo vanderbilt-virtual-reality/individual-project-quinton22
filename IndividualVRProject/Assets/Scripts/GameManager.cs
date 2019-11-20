@@ -23,11 +23,13 @@ public class GameManager : MonoBehaviour
     private float completeTime = 5f;
     private GameObject objectToDelete;
     private List<string> multSnapping = new List<string>();
+
+    private float m_size;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_size = m_Block1.transform.localScale.x;
     }
 
     // Update is called once per frame
@@ -68,91 +70,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine("CompleteCoroutine");
     }
 
-    private void SpawnObjects2(int value1, int value2, bool addition)
-    {
-        Vector3 pos = m_Block1.transform.position;
-        pos.y -= 2;
-        if (addition)
-        {
-            GameObject new_Block = Instantiate(m_Block1);
-            new_Block.GetComponent<MeshRenderer>().enabled = true;
-            new_Block.transform.position = pos;
-            new_Block.transform.localScale = new Vector3(value1, 1, 1);
-            new_Block.name = $"Add{value1}";
-            ToggleColliders(new_Block, new Dictionary<string, bool>(){
-                {"X1", true},
-                {"X2", true},
-                {"Y1", false},
-                {"Y2", false},
-                {"Z1", false},
-                {"Z2", false},
-            });
-            new_Block.GetComponent<Rigidbody>().isKinematic = false;
-            ScaleColliders(new_Block, new Vector3(value1, 1, 1));
-            ScaleTileMap(new_Block, new Vector3(value1, 1, 1));
-
-            pos = m_Block2.transform.position;
-            pos.y -= 2;
-            new_Block = Instantiate(m_Block2);
-            new_Block.GetComponent<MeshRenderer>().enabled = true;
-            new_Block.transform.position = pos;
-            new_Block.transform.localScale = new Vector3(value2, 1, 1);
-            new_Block.name = $"Add{value2}";
-            ToggleColliders(new_Block, new Dictionary<string, bool>(){
-                {"X1", true},
-                {"X2", true},
-                {"Y1", false},
-                {"Y2", false},
-                {"Z1", false},
-                {"Z2", false},
-            });
-            new_Block.GetComponent<Rigidbody>().isKinematic = false;
-            ScaleColliders(new_Block, new Vector3(value2, 1, 1));
-            ScaleTileMap(new_Block, new Vector3(value2, 1, 1));
-        }
-        else
-        {
-            for (var i = 0; i < value1; ++i)
-            {
-                pos.z += i*1.5f;
-                GameObject new_Block = Instantiate(m_Block1);
-                new_Block.GetComponent<MeshRenderer>().enabled = true;
-                new_Block.transform.position = pos;
-                new_Block.transform.localScale = new Vector3(value2, 1, 1);
-                new_Block.name = $"Mult{i}";
-                ToggleColliders(new_Block, new Dictionary<string, bool>(){
-                {"X1", false},
-                {"X2", false},
-                {"Y1", true},
-                {"Y2", true},
-                {"Z1", true},
-                {"Z2", true},
-                });
-                new_Block.GetComponent<Rigidbody>().isKinematic = false;
-            }
-        }
-    }
-
-    private void ScaleColliders(GameObject o, Vector3 scale)
-    {
-        foreach (Transform child in o.transform)
-        {
-            Vector3 oldScale = child.localScale;
-            child.localScale = new Vector3(oldScale.x / scale.x, oldScale.y / scale.y, oldScale.z / scale.z);
-            child.localPosition = new Vector3(
-                Math.Sign(child.localPosition.x) * (Math.Abs(child.localPosition.x) - Math.Abs(oldScale.x/2 - child.localScale.x/2)),
-                Math.Sign(child.localPosition.y) * (Math.Abs(child.localPosition.y) - Math.Abs(oldScale.y / 2 - child.localScale.y / 2)),
-                Math.Sign(child.localPosition.z) * (Math.Abs(child.localPosition.z) - Math.Abs(oldScale.z / 2 - child.localScale.z / 2))
-            );
-           //child.position = new Vector3(child.position.x / scale.x, child.position.y / scale.y, child.position.z / scale.z);
-        }
-    }
-
-    private void ScaleTileMap(GameObject o, Vector3 scale)
-    {
-        o.GetComponent<Renderer>().material.mainTextureScale = new Vector2(scale.x, scale.y);
-    }
-
     private void SpawnObjects(int value1, int value2, bool addition)
     {
         Vector3 pos = m_Block1.transform.position;
@@ -160,8 +77,7 @@ public class GameManager : MonoBehaviour
         // TODO
         if (addition)
         {
-            GameObject[] blocks1 = new GameObject[value1];
-            GameObject[] blocks2 = new GameObject[value2];
+            
             GameObject obj1 = CreateGameObject(pos, value1, "Add1");
             GameObject obj2 = CreateGameObject(new Vector3(pos.x, pos.y, pos.z+2), value2, "Add2");
 
@@ -169,9 +85,8 @@ public class GameManager : MonoBehaviour
             {
                 GameObject new_Block = Instantiate(m_Block1, obj1.transform);
                 new_Block.GetComponent<MeshRenderer>().enabled = true;
-                new_Block.transform.localPosition = new Vector3(i, 0, 0);
+                new_Block.transform.localPosition = new Vector3(i * m_size, 0, 0);
                 new_Block.name = $"Add1b{i}";
-                blocks1[i] = new_Block;
                 ToggleAddColliders(new_Block, i, value1);
 
             }
@@ -179,9 +94,8 @@ public class GameManager : MonoBehaviour
             {
                 GameObject new_Block = Instantiate(m_Block1, obj2.transform);
                 new_Block.GetComponent<MeshRenderer>().enabled = true;
-                new_Block.transform.localPosition = new Vector3(i, 0, 0);
+                new_Block.transform.localPosition = new Vector3(i * m_size, 0, 0);
                 new_Block.name = $"Add2b{i}";
-                blocks2[i] = new_Block;
                 ToggleAddColliders(new_Block, i, value2);
 
             }
@@ -195,7 +109,7 @@ public class GameManager : MonoBehaviour
                 {
                     GameObject new_Block = Instantiate(m_Block1, obj1.transform);
                     new_Block.GetComponent<MeshRenderer>().enabled = true;
-                    new_Block.transform.localPosition = new Vector3(j, 0, 0);
+                    new_Block.transform.localPosition = new Vector3(j * m_size, 0, 0);
                     new_Block.name = $"b{j}";
                     ToggleMultColliders(new_Block);
 
@@ -258,9 +172,10 @@ public class GameManager : MonoBehaviour
         GameObject o = new GameObject();
         o.transform.position = pos;
         BoxCollider bc = o.AddComponent<BoxCollider>();
-        o.AddComponent<OVRGrabbable>();
-        bc.size = new Vector3(size, 1, 1);
-        bc.center = new Vector3(size/2.0f - 0.5f, 0, 0);
+        OVRGrabbable ovr = o.AddComponent<OVRGrabbable>();
+        ovr.enabled = true;
+        bc.size = new Vector3(size * m_size, m_size, m_size);
+        bc.center = new Vector3((size/2.0f - 0.5f )* m_size, 0, 0);
         o.AddComponent<Rigidbody>();
 
         if (name == "Blocks")
@@ -269,51 +184,6 @@ public class GameManager : MonoBehaviour
         }
         o.name = name;
         return o;
-    }
-
-    public void MergeObjects(GameObject o1, GameObject o2)
-    {
-        if (!shouldSnap)
-        {
-            shouldSnap = true;
-            return;
-        }
-
-        Transform o1Parent = o1.transform.parent;
-        Transform o2Parent = o2.transform.parent;
-
-        if (isAdd)
-        {
-
-            o1Parent.localScale = o1Parent.localScale +  new Vector3(o2Parent.localScale.x, 0, 0);
-            ScaleColliders(o1Parent.gameObject, o1Parent.localScale);
-            ScaleTileMap(o1Parent.gameObject, o1Parent.localScale);
-
-            Vector3 o1Pos = o1Parent.position;
-            Vector3 o2Pos = o2Parent.position;
-
-            Vector3 o1Pos1 = o1Pos + o1Parent.rotation * new Vector3(o2Parent.localScale.x / 2, 0, 0);
-            Vector3 o1Pos2 = o1Pos - o1Parent.rotation * new Vector3(o2Parent.localScale.x / 2, 0, 0);
-            if (Vector3.Magnitude(o1Pos1 - o2Pos) > Vector3.Magnitude(o1Pos2 - o2Pos))
-            {
-                Debug.Log("Here");
-
-                Debug.Log(o1Parent.position);
-                o1Parent.position -= o1Parent.rotation * new Vector3(o2Parent.localScale.x / 2, 0, 0);
-                Debug.Log(o1Parent.position);
-
-            }
-            else
-            {
-                o1Parent.position += o1Parent.rotation *  new Vector3(o2Parent.localScale.x / 2, 0, 0);
-            }
-            
-
-            Destroy(o2Parent.gameObject);
-        }
-
-        shouldSnap = false;
-        //Complete();
     }
 
     public void SnapObjects(GameObject o1, GameObject o2)
@@ -356,15 +226,15 @@ public class GameManager : MonoBehaviour
                     {
                         //Debug.Log(child.gameObject.name);
                         child.parent = o1Parent.transform;
-                        child.localPosition = new Vector3(--index, 0, 0);
+                        child.localPosition = new Vector3(--index * m_size, 0, 0);
                         child.localRotation = Quaternion.identity;
                     }
 
                    
                     BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
                     Vector3 oldCenter = bc.center;
-                    bc.size = new Vector3(o1Parent.transform.childCount, 1, 1);
-                    bc.center = oldCenter + new Vector3(index/2f, 0, 0);
+                    bc.size = new Vector3(o1Parent.transform.childCount * m_size, m_size, m_size);
+                    bc.center = oldCenter + new Vector3(index * m_size/2f, 0, 0);
 
                     // Vector3 pos;
                     // // slide everything so it is centered
@@ -401,14 +271,14 @@ public class GameManager : MonoBehaviour
                     {
                         //Debug.Log(child.gameObject.name);
                         child.parent = o1Parent.transform;
-                        child.localPosition = new Vector3(++index, 0, 0);
+                        child.localPosition = new Vector3(++index * m_size, 0, 0);
                         child.localRotation = Quaternion.identity;
                     }
                 }
 
                 BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
-                bc.size = new Vector3(o1Parent.transform.childCount, 1, 1);
-                bc.center = new Vector3(o1Parent.transform.childCount / 2f - .5f, 0, 0);
+                bc.size = new Vector3(o1Parent.transform.childCount * m_size, m_size, m_size);
+                bc.center = new Vector3((o1Parent.transform.childCount / 2f - .5f) * m_size, 0, 0);
             }
 
             // turn off all colliders
@@ -461,10 +331,10 @@ public class GameManager : MonoBehaviour
                             child.parent = o1Parent.transform;
                             Vector3 pos = o1.transform.parent.localPosition;
                             if (name1 == "Z1")
-                                pos.z -= i + lowestPos;
+                                pos.z -= i * m_size + lowestPos;
                             else if (name1 == "Z2")
-                                pos.z += i + highestPos;
-                            pos.x = j;
+                                pos.z += i * m_size + highestPos;
+                            pos.x = j * m_size;
                             child.localPosition = pos;
                             child.localRotation = Quaternion.identity;
 
@@ -478,6 +348,10 @@ public class GameManager : MonoBehaviour
                             }
                         }
                     }
+
+                    BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
+                    bc.size = new Vector3(val2 * m_size, m_size, (o1Parent.transform.childCount / val2) * m_size);
+                    //bc.center = new Vector3((o1Parent.transform.childCount / 2f - .5f) * m_size, 0, 0);
                     
                 }
                 
@@ -507,10 +381,10 @@ public class GameManager : MonoBehaviour
                             child.parent = o1Parent.transform;
                             Vector3 pos = o1.transform.parent.localPosition;
                             if (name1 == "Y1")
-                                pos.y -= i + lowestPos;
+                                pos.y -= i * m_size + lowestPos;
                             else if (name1 == "Y2")
-                                pos.y += i + highestPos;
-                            pos.x = j;
+                                pos.y += i * m_size + highestPos;
+                            pos.x = j * m_size;
                             child.localPosition = pos;
                             child.localRotation = Quaternion.identity;
 
@@ -524,6 +398,9 @@ public class GameManager : MonoBehaviour
                             }
                         }
                     }
+
+                    BoxCollider bc = o1Parent.GetComponent<BoxCollider>();
+                    bc.size = new Vector3(val2 * m_size, (o1Parent.transform.childCount / val2) * m_size, m_size);
                 }
 
                 Destroy(o2Parent);
