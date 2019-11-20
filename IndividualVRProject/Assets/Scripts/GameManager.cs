@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     private bool isAdd;
 
     private bool shouldSnap = false;
-    private float completeTime = 10f;
+    private float completeTime = 5f;
     private GameObject objectToDelete;
     private List<string> multSnapping = new List<string>();
     
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
         if (isComplete)
         {
             // start new round
-            isAdd = false;//TODO: random.Next(0, 2) == 0;
+            isAdd = random.Next(0, 2) == 0;
             val1 = random.Next(m_Range[0], m_Range[1]);
             val2 = random.Next(m_Range[0], m_Range[1]);
 
@@ -59,11 +59,12 @@ public class GameManager : MonoBehaviour
         isComplete = true;
         multSnapping.Clear();
 
-        m_TextUpdater.Complete();
+        
     }
 
     public void Complete()
     {
+        m_TextUpdater.Complete();
         StartCoroutine("CompleteCoroutine");
     }
 
@@ -431,8 +432,7 @@ public class GameManager : MonoBehaviour
                 multSnapping.Clear();
                 multSnapping.Add(o1Parent.name);
                 multSnapping.Add(o2Parent.name);
-                Debug.Log("Here");
-                Debug.Log($"{multSnapping[0]}, {multSnapping[1]}");
+               
                 if (name1 == "Z1" || name1 == "Z2")
                 {
                     var lowestPos = FindLowestPosition(o1Parent, "Z");
@@ -526,14 +526,15 @@ public class GameManager : MonoBehaviour
                 }
 
                 Destroy(o2Parent);
+                if (o1Parent.transform.childCount == val1 * val2)
+                {
+                    objectToDelete = o1Parent;
+                    Complete();
+                }
             }
 
 
-            if (o1Parent.transform.childCount == val1 * val2)
-            {
-                objectToDelete = o1Parent;
-                Complete();
-            }
+            
         }
 
         shouldSnap = false;

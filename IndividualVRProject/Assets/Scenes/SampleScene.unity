@@ -949,7 +949,7 @@ MonoBehaviour:
   m_TextUpdater: {fileID: 964478}
   m_Block1: {fileID: 794826248}
   m_Block2: {fileID: 603575762}
-  m_Range: 010000000a000000
+  m_Range: 020000000a000000
 --- !u!4 &573602379
 Transform:
   m_ObjectHideFlags: 0
